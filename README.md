@@ -141,3 +141,19 @@ message Comment {
     uuid postId = 2;
     string message = 3; 
 }
+```
+# Posts related services 
+Сервіси як зв'язані з постами
+Post - зберігає пости
+Post Query - сервіс для feed або recommendation стрічок
+## Post
+
+```protobuf 
+message Post {
+    uuid id = 1;
+    User user = 2;
+    string photoLocation = 3;
+    string description = 4;
+    uint32 likeCount = 5;
+}
+```
