@@ -131,5 +131,13 @@ message Token {
     string token = 2;
 }
 ```
+# Comment sevice 
+Сервіс для збереження коментів під пост
 
-
+### models
+```protobuf 
+message Comment {
+    uuid userId = 1;
+    uuid postId = 2;
+    string message = 3; 
+}
