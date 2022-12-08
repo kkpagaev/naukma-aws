@@ -150,10 +150,37 @@ Post Query - сервіс для feed або recommendation стрічок
 
 ```protobuf 
 message Post {
-    uuid id = 1;
+    uuid postId = 1;
     User user = 2;
     string photoLocation = 3;
     string description = 4;
     uint32 likeCount = 5;
+}
+```
+
+```protobuf 
+message CreatePostRequest { 
+    User user = 2;
+    string photoLocation = 3;
+    string description = 4;
+}
+message UpdatePostRequest { 
+    string description = 4;
+}
+message DeletePostRequest { 
+    uuid postId = 1;
+}
+message GetPostRequest { 
+    uuid postId = 1;
+}
+message GetPostsRequest { 
+    uuid userId = 1;
+}
+service PostService {
+    rpc CreatePost(CreatePostRequest) returns(Post);
+    rpc UpdatePost(UpdatePostRequest) returns(Post);
+    rpc DeletePost(DelelePostRequest) returns(bool);
+    rpc GetPost(GetPostRequest) returns(Post);
+    rpc GetPosts(GetPostsRequest) returns(Post);
 }
 ```
