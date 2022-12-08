@@ -78,7 +78,6 @@ service UserService {
 ```
 ### DELETE: /api/user/{:id}
 Раут з видаленням користувача, насправді не видаляє, а приховує його, також викликає SAGA транзацкію для приховання постів і коментів користувача
-
 ```protobuf
 message DeleteUserRequest {
    string userId = 1;
@@ -87,9 +86,23 @@ service UserService {
     rpc DeleteUser(DeleteUserRequest) returns(bool);
 }
 ```
-- Edge service
-Сервіс API Gateway, функції
-- Авторизація користувача
-Перевірка 
-
+# Media service
+Медіа сервіс для збереження картинок та аватарок. Всі картинки зберігаються в сервісі AWS S3.
+Сутність і метод один, Metadata і UploadImage. Метадата зберігається в MongoDB
+### model
+```protobuf 
+message Metadata {
+    uuid metadataId = 1;
+    string location = 2;
+}
+```
+### grpc
+```protobuf
+message UploadImageRequest {
+    bytes image = 1;
+}
+service UserService {
+    rpc UploadImage(stream UploadImageRequest) returns(JwtTokenPair);
+}
+```
 
