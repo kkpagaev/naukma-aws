@@ -14,6 +14,7 @@ message User {
     bool emailConfirmed = 5;
     string description = 5;
     bool isHidden = 6;
+    Timestamp registredAt = 7;
 }
 ```
 ## routes
@@ -105,4 +106,29 @@ service UserService {
     rpc UploadImage(stream UploadImageRequest) returns(JwtTokenPair);
 }
 ```
+# Social service
+gRPC сервіс для побудови зв'язків між юзерів і системи піписок. Використовується графова база даних Neo4j. 
+Слухає івент user.created і створює для цього користувача ноду. Також при підписці користувача на іншого користувача створюється edge.
+Також можливість підрахувати піписки та фоловерів.
+
+# Activity log service
+Збирає логи від користувачів та передає його в біг дату, де навчаються моделі для рекомендації 
+
+# Notification service
+Слухає івенти від Social та додає нотіфікейшн в бд та відправляє в AWS SNS, також збирає токени користувача (@TODO мобільні переписати пізніше)
+### models 
+```protobuf 
+message Notification {
+    uuid id = 1;
+    string message = 2;
+    User user = 3;
+    Timestamp createdAt = 4;
+}
+
+message Token {
+    uuid userId = 1;
+    string token = 2;
+}
+```
+
 
