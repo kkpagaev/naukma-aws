@@ -121,7 +121,8 @@ gRPC сервіс для побудови зв'язків між юзерів і
 message Notification {
     uuid id = 1;
     string message = 2;
-    User user = 3;
+    User publisher = 3;
+    uuid userId = 4;
     Timestamp createdAt = 4;
 }
 
