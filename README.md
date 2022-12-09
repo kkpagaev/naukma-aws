@@ -110,7 +110,23 @@ service UserService {
 gRPC сервіс для побудови зв'язків між юзерів і системи піписок. Використовується графова база даних Neo4j. 
 Слухає івент user.created і створює для цього користувача ноду. Також при підписці користувача на іншого користувача створюється edge.
 Також можливість підрахувати піписки та фоловерів.
-
+```protobuf
+message Node {
+    uint32 userId = 1;
+}
+message Edge {
+    uint32 followerId = 1;
+    uint32 followsId = 2;
+}
+service SocialService {
+    rpc GetFollows(Node) returns (Node[]);
+    rpc GetFollowersCount(Node) returns (uint32);
+    //?
+    rpc Follow(Edge) returns();
+    //?
+    rpc Unfollow(Edge) returns();
+}
+```
 # Activity log service
 Збирає логи від користувачів та передає його в біг дату, де навчаються моделі для рекомендації 
 
@@ -177,10 +193,28 @@ message GetPostsRequest {
     uuid userId = 1;
 }
 service PostService {
+    // produces event post.created
     rpc CreatePost(CreatePostRequest) returns(Post);
+    // produces event post.updated
     rpc UpdatePost(UpdatePostRequest) returns(Post);
     rpc DeletePost(DelelePostRequest) returns(bool);
     rpc GetPost(GetPostRequest) returns(Post);
     rpc GetPosts(GetPostsRequest) returns(Post);
+}
+```
+## Feed Service 
+Сервіс постів слухає івени post.created та post.updated, використовує базу даних cassandra, через те що може зберігати велику кількість дати,
+і швидко читати та записувати.
+
+```protobuf 
+message GetFollowsFeedRequest { 
+    uuid userId = 1;
+}
+message GetRecommendationFeedRequest { 
+    uuid userId = 1;
+}
+service FeedService {
+    rpc Follows(GetFollowsFeedRequest) returns(Post[]);
+    rpc Recommendations(GetRecommendationFeedRequest) returns(Post[]);
 }
 ```
