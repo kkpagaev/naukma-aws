@@ -171,6 +171,7 @@ message Post {
     string photoLocation = 3;
     string description = 4;
     uint32 likeCount = 5;
+    Timestamp timeCreated = 6;
 }
 ```
 
@@ -203,8 +204,12 @@ service PostService {
 }
 ```
 ## Feed Service 
-Сервіс постів слухає івени post.created та post.updated, використовує базу даних cassandra, через те що може зберігати велику кількість дати,
+Сервіс постів слухає івенти post.created та post.updated, використовує базу даних cassandra, через те що може зберігати велику кількість дати,
 і швидко читати та записувати.
+
+Схема даних бд:
+
+![feed service db schema](cassandra_feed.png)
 
 ```protobuf 
 message GetFollowsFeedRequest { 
