@@ -177,6 +177,7 @@ message Post {
     string description = 4;
     uint32 likeCount = 5;
     Timestamp timeCreated = 6;
+    repeated string hashTags = 7;
 }
 ```
 
@@ -226,5 +227,23 @@ message GetRecommendationFeedRequest {
 service FeedService {
     rpc Follows(GetFollowsFeedRequest) returns(Post[]);
     rpc Recommendations(GetRecommendationFeedRequest) returns(Post[]);
+}
+```
+
+## Search Service
+
+Сервіс для швидкого пошуку за користувачів за юзернеймом або постів за хештегами. Використовується пошукова база даних ElasticSearch. Зберігає лише ті дані, за якими можна здійснювати пошук, а також id. Створює записи при івентах user.created та post.created. При пошуковому запиті емітить івент із знайденими результатами (список айді юзерів або постів), щоб за цими айдішниками знайти повні записи.
+
+```protobuf 
+message SearchUsersRequest { 
+    string pattern = 1;
+}
+message SearchHashTagsRequest { 
+    repeated string tags = 1;
+}
+
+service SearchService {
+    rpc SearchUsers(SearchUsersRequest) returns(User[])
+    rpc SearchHashtags(SearchHashTagsRequest) returns(Post[])
 }
 ```
