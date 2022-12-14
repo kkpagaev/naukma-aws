@@ -77,16 +77,6 @@ service UserService {
     rpc RefreshTokens(RefreshTokenRequest) returns(JwtTokenPair);
 }
 ```
-### DELETE: /api/user/{:id}
-Раут з видаленням користувача, насправді не видаляє, а приховує його, також викликає SAGA транзацкію для приховання постів і коментів користувача
-```protobuf
-message DeleteUserRequest {
-   string userId = 1;
-}
-service UserService {
-    rpc DeleteUser(DeleteUserRequest) returns(bool);
-}
-```
 # Media service
 Медіа сервіс для збереження картинок та аватарок. Всі картинки зберігаються в сервісі AWS S3.
 Сутність і метод один, Metadata і UploadImage. Метадата зберігається в MongoDB
