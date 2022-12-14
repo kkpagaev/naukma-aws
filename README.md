@@ -234,8 +234,28 @@ service PostService {
 
 ## Feed Service
 
-Сервіс, що створю і зберігає subscription feed користувача. Утворення відбувається через batch job кожні 10-15 хвилин
-на основі інформації про пости користувачів, чиїм фоловером є даний користувач із мікросервісу Social.
+Сервіс, що створю і зберігає subscription feed користувача. Утворення відбувається через batch job кожні 10-15 хвилин на
+основі інформації про пости користувачів, чиїм фоловером є даний користувач із мікросервісу Social.
+
+Використовує Redis.
+
+Зберігає дані у форматі:
+
+uuid of user : array of uuids of posts
+
+```protobuf 
+message GetFollowsFeedRequest { 
+    uuid userId = 1;
+}
+service FeedService {
+    rpc Follows(GetFollowsFeedRequest) returns(Post[]);
+}
+```
+
+## Recommendations service
+
+Сервіс, що створю і зберігає subscription feed користувача. Утворення відбувається через batch job кожні 10-15 хвилин на
+основі інформації про пости користувачів, чиїм фоловером є даний користувач із мікросервісу Social.
 
 Використовує Redis.
 
