@@ -100,6 +100,11 @@ service UserService {
 gRPC сервіс для побудови зв'язків між юзерів і системи піписок. Використовується графова база даних Neo4j. 
 Слухає івент user.created і створює для цього користувача ноду. Також при підписці користувача на іншого користувача створюється edge.
 Також можливість підрахувати піписки та фоловерів.
+
+схема даних бд: 
+
+![db schema for social service](social_schema.png)
+
 ```protobuf
 message Node {
     uint32 userId = 1;
@@ -161,6 +166,8 @@ message Post {
     string photoLocation = 3;
     string description = 4;
     uint32 likeCount = 5;
+    Timestamp timeCreated = 6;
+    repeated string hashTags = 7;
 }
 ```
 
@@ -193,8 +200,12 @@ service PostService {
 }
 ```
 ## Feed Service 
-Сервіс постів слухає івени post.created та post.updated, використовує базу даних cassandra, через те що може зберігати велику кількість дати,
+Сервіс постів слухає івенти post.created та post.updated, використовує базу даних cassandra, через те що може зберігати велику кількість дати,
 і швидко читати та записувати.
+
+Схема даних бд:
+
+![feed service db schema](cassandra_feed.png)
 
 ```protobuf 
 message GetFollowsFeedRequest { 
@@ -206,5 +217,23 @@ message GetRecommendationFeedRequest {
 service FeedService {
     rpc Follows(GetFollowsFeedRequest) returns(Post[]);
     rpc Recommendations(GetRecommendationFeedRequest) returns(Post[]);
+}
+```
+
+## Search Service
+
+Сервіс для швидкого пошуку за користувачів за юзернеймом або постів за хештегами. Використовується пошукова база даних ElasticSearch. Зберігає лише ті дані, за якими можна здійснювати пошук, а також id. Створює записи при івентах user.created та post.created. При пошуковому запиті емітить івент із знайденими результатами (список айді юзерів або постів), щоб за цими айдішниками знайти повні записи.
+
+```protobuf 
+message SearchUsersRequest { 
+    string pattern = 1;
+}
+message SearchHashTagsRequest { 
+    repeated string tags = 1;
+}
+
+service SearchService {
+    rpc SearchUsers(SearchUsersRequest) returns(User[])
+    rpc SearchHashtags(SearchHashTagsRequest) returns(Post[])
 }
 ```
