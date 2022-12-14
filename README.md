@@ -108,7 +108,8 @@ gRPC сервіс для побудови зв'язків між юзерами,
 
 # Notification service
 Слухає івенти від Social та додає нотіфікейшн в бд та відправляє в AWS SNS,
-також збирає токени (дозволи на відправку) користувача 
+також збирає токени (дозволи на відправку) користувача.
+Використовує PostgreSQL
 
 ![db schema for notification service](notifi.png)
 ### models 
@@ -127,7 +128,11 @@ message Token {
 }
 ```
 # Comment sevice 
-Сервіс для збереження коментів під пост
+Сервіс для збереження коментарів під пост.
+
+Використовує PostgreSQL
+
+![db schema for comment service](image(2).png)
 
 ### models
 ```protobuf 
@@ -135,14 +140,23 @@ message Comment {
     uuid userId = 1;
     uuid postId = 2;
     string message = 3; 
+    Timestamp timePublished = 4;
 }
 ```
-# Posts related services 
-Сервіси як зв'язані з постами
-Post - зберігає пости
-Post Query - сервіс для feed або recommendation стрічок
-## Post
+# Posts related services
 
+## Post
+Post - зберігає пости.
+
+Використовує PostgreSQL.
+
+Слухає події про лайки на пости від Social, відповідно оновлює таблицю User_likes_post, періодичний batch_job
+підраховує кількість лайків та оновлює таблицю Post.
+
+Продукує подію post.updated в разі оновлення інформації у пості для сповіщення про це сервісів, що її дублюють. 
+
+![db schema for post service](image.png)
+![db schema for post service](image(1).png)
 ```protobuf 
 message Post {
     uuid postId = 1;
