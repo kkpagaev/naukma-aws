@@ -79,14 +79,7 @@ service UserService {
 ```
 # Media service
 Медіа сервіс для збереження картинок та аватарок. Всі картинки зберігаються в сервісі AWS S3.
-Сутність і метод один, Metadata і UploadImage. Метадата зберігається в MongoDB
-### model
-```protobuf 
-message Metadata {
-    uuid metadataId = 1;
-    string location = 2;
-}
-```
+
 ### grpc
 ```protobuf
 message UploadImageRequest {
@@ -97,31 +90,17 @@ service UserService {
 }
 ```
 # Social service
-gRPC сервіс для побудови зв'язків між юзерів і системи піписок. Використовується графова база даних Neo4j. 
+gRPC сервіс для побудови зв'язків між юзерами, їх постами, постами та коментарями, що їм подобаються, а також тегами та геолокаціями постів та постами.
+Використовується графова база даних Neo4j. 
+Запропонована схема дозволяє ефективно доступатися до постів користувача та його підписок та постів, що мають спільні з постами користувача теги та геолокації.
 Слухає івент user.created і створює для цього користувача ноду. Також при підписці користувача на іншого користувача створюється edge.
-Також можливість підрахувати піписки та фоловерів.
+Подібним чином сервіс оброблює і лайки користувача. Працює batch job, що продукує івенти з інформацією про кількість лайків на пості.
+При створенні поста, сервіс отримує інформацію (автора, хештеги, геолокацію) і створює відповідні зв'язки.
 
 схема даних бд: 
 
-![db schema for social service](social_schema.png)
+![db schema for social service](img.png)
 
-```protobuf
-message Node {
-    uint32 userId = 1;
-}
-message Edge {
-    uint32 followerId = 1;
-    uint32 followsId = 2;
-}
-service SocialService {
-    rpc GetFollows(Node) returns (Node[]);
-    rpc GetFollowersCount(Node) returns (uint32);
-    //?
-    rpc Follow(Edge) returns();
-    //?
-    rpc Unfollow(Edge) returns();
-}
-```
 # Activity log service
 Збирає логи від користувачів та передає його в біг дату, де навчаються моделі для рекомендації 
 
