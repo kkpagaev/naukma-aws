@@ -257,18 +257,18 @@ service FeedService {
 Сервіс, що створю і зберігає recommendation feed користувача. Утворення відбувається при отриманні log.user-online за умови, що пройшло достатньо часу для оновлення
 рекомендації створюються на сонові інформації з сервісу Social (пости, що мають спільні хештеги/геолоки із постами даного користувача а також пости із підписок користувачів, на котрих підписаний користувач).
 
-Використовує Cassandra для швидкого формування і читання списку постів.
+Використовує Cassandra для швидкого формування і читання списку постів, дублює інформацію з сервісу Post, слухає post.updated для коригування інформації у локальному списку постів.
 
 Схема бд:
 
 ![db schema for post service](image(3).png)
 
 ```protobuf 
-message GetFollowsFeedRequest { 
+message GetRecommendationsFeedRequest { 
     uuid userId = 1;
 }
-service FeedService {
-    rpc Follows(GetFollowsFeedRequest) returns(Post[]);
+service RecommendationsService {
+    rpc Recommend(GetRecommendationsFeedRequest) returns(Post[]);
 }
 ```
 
